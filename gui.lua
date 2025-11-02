@@ -1,12 +1,27 @@
---// Steal Hub GUI
--- Bu kodu bir LocalScript'e koy (örneğin StarterGui içine)
--- veya loadstring ile çalıştırılacak hale getirebilirsin
+--// Steal Hub GUI (Güncellenmiş)
+-- LocalScript veya loadstring ile çalıştırılabilir
+
+-- Koruma: Önceden aynı GUI varsa sil
+if game:GetService("CoreGui"):FindFirstChild("StealHub") then
+	game:GetService("CoreGui"):FindFirstChild("StealHub"):Destroy()
+end
 
 -- GUI oluştur
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "StealHub"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game:GetService("CoreGui")
+
+-- Bazı executor'lar CoreGui'ye yazmaya izin vermez, bu yüzden pcall kullanıyoruz
+local success = pcall(function()
+	ScreenGui.Parent = game:GetService("CoreGui")
+end)
+if not success then
+	-- CoreGui'ye yazılamıyorsa PlayerGui'ye ekle
+	local player = game.Players.LocalPlayer or game:GetService("Players").LocalPlayer
+	if player and player:FindFirstChildOfClass("PlayerGui") then
+		ScreenGui.Parent = player:FindFirstChildOfClass("PlayerGui")
+	end
+end
 
 -- Ana Frame
 local MainFrame = Instance.new("Frame")
@@ -46,7 +61,6 @@ end)
 
 -- Sağ Shift ile aç/kapat
 local UserInputService = game:GetService("UserInputService")
-
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 	if input.KeyCode == Enum.KeyCode.RightShift then
