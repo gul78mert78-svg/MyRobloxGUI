@@ -1,43 +1,72 @@
--- gui.lua
-local player = game.Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
+--// Güvenli & Görsel Steal Hub GUI //--
+-- Yapan: Sen :)
 
-local screenGui = Instance.new("ScreenGui", player.PlayerGui)
-local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 300, 0, 400)
-mainFrame.Position = UDim2.new(0, 50, 0, 50)
-mainFrame.BackgroundTransparency = 0.5
-mainFrame.Visible = false
+-- GUI zaten varsa sil
+if game.CoreGui:FindFirstChild("StealHubGUI") then
+    game.CoreGui.StealHubGUI:Destroy()
+end
 
-local mainButton = Instance.new("TextButton", screenGui)
-mainButton.Text = "Main"
-mainButton.Position = UDim2.new(0, 50, 0, 20)
-mainButton.Size = UDim2.new(0, 100, 0, 50)
+-- Ana GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "StealHubGUI"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = game.CoreGui
 
-mainButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-end)
+-- Ana Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.4, 0, 0.4, 0)
+frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.BorderSizePixel = 0
+frame.Parent = gui
 
--- Save/Go base
-local savedPosition = nil
+-- Ortadaki yazı
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0.3, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Steal Hub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
 
-local saveButton = Instance.new("TextButton", mainFrame)
-saveButton.Text = "Save Your Base"
-saveButton.Size = UDim2.new(0, 150, 0, 50)
-saveButton.Position = UDim2.new(0, 10, 0, 10)
-saveButton.MouseButton1Click:Connect(function()
-    savedPosition = player.Character.HumanoidRootPart.Position
-end)
+-- Alt yazı
+local speed = Instance.new("TextLabel")
+speed.Size = UDim2.new(1, 0, 0.2, 0)
+speed.Position = UDim2.new(0, 0, 0.8, 0)
+speed.BackgroundTransparency = 1
+speed.Text = "Speed"
+speed.TextColor3 = Color3.fromRGB(255, 255, 255)
+speed.TextScaled = true
+speed.Font = Enum.Font.Gotham
+speed.Parent = frame
 
-local goButton = Instance.new("TextButton", mainFrame)
-goButton.Text = "Go Your Base"
-goButton.Size = UDim2.new(0, 150, 0, 50)
-goButton.Position = UDim2.new(0, 10, 0, 70)
-goButton.MouseButton1Click:Connect(function()
-    if savedPosition then
-        local hrp = player.Character.HumanoidRootPart
-        local tween = TweenService:Create(hrp, TweenInfo.new(3), {Position = savedPosition})
-        tween:Play()
+-- Açılış ve kapanış sesi
+local openSound = Instance.new("Sound")
+openSound.SoundId = "rbxassetid://12222140" -- bir örnek "click" sesi
+openSound.Volume = 1
+openSound.Parent = gui
+
+local closeSound = Instance.new("Sound")
+closeSound.SoundId = "rbxassetid://12222058"
+closeSound.Volume = 1
+closeSound.Parent = gui
+
+-- Başta kapalı
+gui.Enabled = false
+
+-- Tuş atama (G tuşu)
+local toggleKey = Enum.KeyCode.G
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == toggleKey then
+        gui.Enabled = not gui.Enabled
+        if gui.Enabled then
+            openSound:Play()
+        else
+            closeSound:Play()
+        end
     end
 end)
-
